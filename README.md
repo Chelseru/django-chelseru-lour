@@ -32,7 +32,7 @@ In your Django project's settings.py, add the following parameters:
 ```bash
 INSTALLED_APPS = [
 ...
-'drfiransms',
+'drfiransms', # When used in DRF.
 
 ]
 ```
