@@ -15,8 +15,8 @@ A Django-based SMS integration system for simplifying in-country SMS usage in Ir
 
 ### Prerequisites
 
-- Python 3.x
-- Django 3.x or higher
+- Python 3.11
+- Django 5.1 or higher
 
 ### Installation via pip
 
@@ -89,13 +89,25 @@ curl -X POST https://djangoiransms.chelseru.com/lur/authentication/ \
            "code": "108117114"
          }'
 ```
-
+```bash
+curl -X POST https://djangoiransms.chelseru.com/lur/send-message/ \
+     -H "Content-Type: application/json" \
+     -d '{
+           "mobile_number": "09123456789",
+           "message_text": "hello luristan."
+         }'
+```
 ## User Table
 This package automatically creates a User table in the Django admin with two fields:
 
 - mobile: Stores the user's mobile number.
 - user: A one-to-one relationship with Django's default User model.
 
+## OTP Code Table
+This package automatically creates an OTP Code table in the Django admin with two fields:
+- mobile: Stores the user's mobile number.
+- code: Stores the OTP Code.
+  
 ## JWT Authentication
 This package supports JWT authentication using the rest_framework_simplejwt package. The system is compatible with this authentication method for secure communication with the SMS gateway. Other authentication and login methods are currently under development.
 
