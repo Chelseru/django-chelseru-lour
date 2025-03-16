@@ -134,7 +134,7 @@ DJANGO_IRAN_SMS = {
         'EXPIRE_PER_MINUTES': 4,	                # DEFAULT 4
     },
     'PARSIAN_WEBCO_IR': {
-        'API_KEY': '733422cd01b5bc0e184b605fc8166b072524885b4e64e9e6318a7992.50836432',
+        'API_KEY': '',
         'TEMPLATES': {
             'OTP_CODE': 1,
         }
