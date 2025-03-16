@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Django-based SMS integration system for simplifying in-country SMS usage in Iran, leveraging the `parsianwebco.ir` service with JWT authentication. Developed by the Chelseru team, this package is designed to support additional services in future releases.
+A Django-based SMS integration system for simplifying in-country SMS usage in Iran, leveraging the `parsianwebco.ir` service with JWT authentication. Developed by the Chelseru team, drfiransms is designed to support additional services in future releases.
 
 ## Features
 
@@ -98,18 +98,18 @@ curl -X POST https://djangoiransms.chelseru.com/lur/send-message/ \
          }'
 ```
 ## User Table
-This package automatically creates a User table in the Django admin with two fields:
+Djangosms automatically creates a User table in the Django admin with two fields:
 
 - mobile: Stores the user's mobile number.
 - user: A one-to-one relationship with Django's default User model.
 
 ## OTP Code Table
-This package automatically creates an OTP Code table in the Django admin with two fields:
+drfsms automatically creates an OTP Code table in the Django admin with two fields:
 - mobile: Stores the user's mobile number.
 - code: Stores the OTP Code.
   
 ## JWT Authentication
-This package supports JWT authentication using the rest_framework_simplejwt package. The system is compatible with this authentication method for secure communication with the SMS gateway. Other authentication and login methods are currently under development.
+Djangoiransms supports JWT authentication using the rest_framework_simplejwt package. The system is compatible with this authentication method for secure communication with the SMS gateway. Other authentication and login methods are currently under development.
 
 ## Future Plans
 - Support for additional SMS providers.
@@ -117,7 +117,8 @@ This package supports JWT authentication using the rest_framework_simplejwt pack
 - Rate limiting and monitoring.
 - Contribution
 
-  
+
+A Django package for seamless integration with Iranian SMS services like ParsianWebCo and Melipayamak.
 Contributions are welcome! Please submit pull requests or report issues on the GitHub repository.
 
 ## License
