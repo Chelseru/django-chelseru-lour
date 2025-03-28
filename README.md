@@ -1,6 +1,3 @@
-# Main README
-برای پارسی زبان ها [README_fa.md](README.fa.md).
-
 
 # Django Iran SMS
 
@@ -139,5 +136,8 @@ Contributions are welcome! Please submit pull requests or report issues on the G
 
 ## License
 MIT License
+
+# Main README
+برای پارسی زبان ها [README_fa.md](README.fa.md).
 
 
