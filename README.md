@@ -2,11 +2,11 @@
 
 ## Overview
 
-A Django-based SMS integration system for simplifying in-country SMS usage in Iran, leveraging the `parsianwebco.ir` service with JWT authentication. Developed by the Chelseru team, drfiransms is designed to support additional services in future releases.
+A Django-based SMS integration system for simplifying in-country SMS usage in Iran, leveraging the `parsianwebco.ir` , `melipayamak.com` service with JWT authentication. Developed by the Chelseru team, drfiransms is designed to support additional services in future releases.
 
 ## Features
 
-- Integration with `parsianwebco.ir`
+- Integration with `parsianwebco.ir` , `melipayamak.com`
 - JWT-based authentication using `rest_framework_simplejwt`
 - Scalable and extensible for other SMS providers
 - Easy installation and configuration
@@ -50,6 +50,11 @@ DJANGO_IRAN_SMS = {
         'TEMPLATES': {
             'OTP_CODE': 1,  # Template ID for OTP code
         }
+    },
+    'MELI_PAYAMAK_COM': {
+        'USERNAME': 'Username used to log in to the melipayamak.com website.',
+        'PASSWORD': 'API_KEY obtained from melipayamak.com',
+        'FROM': '50004001001516',  # The sender number that should be received from the web service.
     }
 }
 ```
@@ -63,11 +68,12 @@ In your urls.py, include the following views:
 
 ### urls.py
 ```bash
-from drfiransms.views import OTPCodeSend, Authentication
+from drfiransms.views import OTPCodeSend, Authentication, MessageSend
 
 urlpatterns += [
     path('lur/send-code/', OTPCodeSend.as_view(), name='send_code'),  # Endpoint to send OTP code
-    path('lur/authentication/', Authentication.as_view(), name='authentication')  # Endpoint for authentication
+    path('lur/authentication/', Authentication.as_view(), name='authentication'),  # Endpoint for authentication
+    path('lur/send-message/', MessageSend.as_view(), name='send_message'), # Endpoint to send Message
 ]
 ```
 
@@ -86,9 +92,13 @@ curl -X POST https://djangoiransms.chelseru.com/lur/authentication/ \
      -H "Content-Type: application/json" \
      -d '{
            "mobile": "09123456789",
-           "code": "108117114"
+           "code": "108117114",
+           "group": "1"
          }'
 ```
+- group: An attribute for times when there is a need to segment users, for example a user with a phone number can register as both a driver and a passenger.
+This attribute is not required and if not entered, the default value will be 0.
+
 ```bash
 curl -X POST https://djangoiransms.chelseru.com/lur/send-message/ \
      -H "Content-Type: application/json" \
@@ -102,6 +112,8 @@ Djangosms automatically creates a User table in the Django admin with two fields
 
 - mobile: Stores the user's mobile number.
 - user: A one-to-one relationship with Django's default User model.
+- group: An attribute for times when there is a need to segment users, for example a user with a phone number can register as both a driver and a passenger.
+This attribute is not required and if not entered, the default value will be 0.
 
 ## OTP Code Table
 drfsms automatically creates an OTP Code table in the Django admin with two fields:
