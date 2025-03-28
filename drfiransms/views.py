@@ -5,7 +5,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_500_INT
 from .models import User
 from .serializers import OTPCodeSerializer
 from .validators import mobile_number as mobile_validator
-from .services import ParsianWebcoIr
+from .services import ParsianWebcoIr, MeliPayamakCom
 from .settings import otp_code_expire, init_check, sms_service_check
 
 
@@ -53,6 +53,15 @@ class OTPCodeSend(APIView):
                                         return Response({'details': 'The SMS service provider was unable to process the request.'}, status=HTTP_502_BAD_GATEWAY)
                                     elif response['status'] == 401:
                                         return Response({'details': 'Authentication is not accepted, check your token and if the token has not been received, obtain it from your SMS service provider.'}, status=HTTP_401_UNAUTHORIZED)
+                    
+                            case 'MELI_PAYAMAK_COM':
+                                service = MeliPayamakCom(mobile=obj.mobile)
+                                response = service.send_message(message=obj.code)
+                                if response in [0, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 35]:
+                                    return Response({'details': 'The SMS service provider was unable to process the request.', 'errorCode': response}, status=HTTP_502_BAD_GATEWAY)
+                                else:
+                                    return Response({'details': 'The OTP code was sent correctly.', 'smsID': response}, status=HTTP_200_OK)
+                                
                     else:
                         if obj == 409:
                             return Response({'error': f'Try again after {otp_code_expire()} minutes.'}, status=HTTP_409_CONFLICT)
@@ -73,6 +82,7 @@ class Authentication(APIView):
         prams:
             mobile_number:   str (len: 11)     (exp: 09211892425)
             code: str (len: otp_code_length()) (exp: 652479)
+            pre_username: str (len: 7)         (exp: service)
 
         response:
             HTTP_204_NO_CONTENT             {'error': [params requirements and validations]}
@@ -94,7 +104,8 @@ class Authentication(APIView):
                 if otp:
                     if otp.check_code():
                         # login / signup
-                        user, created = User.objects.get_or_create(mobile=mobile_number, defaults={'mobile': mobile_number})
+                        group = int(request.data['group']) if 'group' in request.data else 0
+                        user, created = User.objects.get_or_create(mobile=mobile_number, group=group)
                         if user:
                             auth_service = icheck['AUTHENTICATION']
                             match auth_service:
@@ -159,6 +170,14 @@ class MessageSend(APIView):
                                     return Response({'details': 'The SMS service provider was unable to process the request.'}, status=HTTP_502_BAD_GATEWAY)
                                 elif response['status'] == 401:
                                     return Response({'details': 'Authentication is not accepted, check your token and if the token has not been received, obtain it from your SMS service provider.'}, status=HTTP_401_UNAUTHORIZED)
+                        case 'MELI_PAYAMAK_COM':
+                                service = MeliPayamakCom(mobile=mobile_number)
+                                response = service.send_message(message=message_text)
+                                if response in [0, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 35]:
+                                    return Response({'details': 'The SMS service provider was unable to process the request.', 'errorCode': response}, status=HTTP_502_BAD_GATEWAY)
+                                else:
+                                    return Response({'receiver': mobile_number, 'message': message_text, 'smsID': response}, status=HTTP_200_OK)
+
 
         except AssertionError as e:
             return Response({'error': str(e)}, status=HTTP_204_NO_CONTENT)

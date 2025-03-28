@@ -15,6 +15,7 @@ from django.dispatch import receiver
 @receiver(pre_save, sender=User)
 def create_user_if_not_exists(sender, instance, **kwargs):
     if not instance.user_id:
-        default_user, created = DefaultUser.objects.get_or_create(mobile__mobile=instance.mobile, defaults={'username': instance.mobile})
+        default_user, created = DefaultUser.objects.get_or_create(mobile__mobile=instance.mobile, mobile__group=instance.group, 
+                                                                  defaults={'username': f'G{instance.group}-{instance.mobile}'})
         if created:
             instance.user = default_user

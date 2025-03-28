@@ -8,6 +8,7 @@ from .settings import otp_code_length, otp_code_expire
 class User(models.Model):
     user = models.OneToOneField(default_user, on_delete=models.CASCADE, related_name='mobile')
     mobile = models.CharField(max_length=11)
+    group = models.IntegerField(default=0, help_text='choice group type or user level, with numbers.')
 
     def __str__(self):
         return f'{self.user.username} | {self.mobile}'
