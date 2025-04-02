@@ -1,7 +1,7 @@
 """
 DJANGO_IRAN_SMS = {
     'AUTHENTICATION': 'rest_framework_simplejwt',   # rest_framework_simplejwt
-    'SMS_BACKEND': 'PARSIAN_WEBCO_IR',              # PARSIAN_WEBCO_IR , MELI_PAYAMAK_COM
+    'SMS_BACKEND': 'PARSIAN_WEBCO_IR',              # PARSIAN_WEBCO_IR , MELI_PAYAMAK_COM , KAVENEGAR_COM
     'OTP_CODE': {
         'LENGTH': 8,                                # DEFAULT 8
         'EXPIRE_PER_MINUTES': 4,                    # DEFAULT 4
@@ -16,7 +16,12 @@ DJANGO_IRAN_SMS = {
         'USERNAME': '',
         'PASSWORD': '',
         'FROM': '',
+    },
+    'KAVENEGAR_COM': {
+        'API_KEY': '656F6635756C485658666F6A52307562456C4F5043714769597A58434D2B527974434534672B50445736553D',
+        'FROM': '2000660110'
     }
+
     ...
 }
 """
@@ -59,8 +64,8 @@ def otp_code_length():
         otp_len = getattr(settings, SERVICE_NAME, {}).get('OTP_CODE', {}).get('LENGTH', 6)
         if not isinstance(otp_len, int):
             raise ImproperlyConfigured("OTP_CODE LENGTH must be int.")
-        if otp_len <= 0 or otp_len > 10:
-            raise ImproperlyConfigured("OTP_CODE LENGTH must be less than or equal to 10 and greater than 0.")
+        if otp_len < 3 or otp_len > 10:
+            raise ImproperlyConfigured("OTP_CODE LENGTH must be less than or equal to 10 and greater than or equal to 3.")
         return otp_len
     except ImproperlyConfigured as e:
         print(f"Configuration Error: {e}")

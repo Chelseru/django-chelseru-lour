@@ -5,7 +5,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_500_INT
 from .models import User
 from .serializers import OTPCodeSerializer
 from .validators import mobile_number as mobile_validator
-from .services import ParsianWebcoIr, MeliPayamakCom
+from .services import ParsianWebcoIr, MeliPayamakCom, KavenegarCom
 from .settings import otp_code_expire, init_check, sms_service_check
 
 
@@ -61,7 +61,26 @@ class OTPCodeSend(APIView):
                                     return Response({'details': 'The SMS service provider was unable to process the request.', 'errorCode': response}, status=HTTP_502_BAD_GATEWAY)
                                 else:
                                     return Response({'details': 'The OTP code was sent correctly.', 'smsID': response}, status=HTTP_200_OK)
-                                
+
+                            case 'KAVENEGAR_COM':
+                                service = KavenegarCom(mobile=mobile_number)
+                                response = service.send_message(message=obj.code)
+                                try:
+                                    response_json = response.json()
+                                    entries = response_json.get('entries', [])
+                                    _return = response_json.get('return', [])
+                                    if entries:
+                                        response_data = entries[0]
+                                        if response.status_code == 200 and response_data.get('status') in [5, 10]:
+                                            return Response({'details': 'The OTP code was sent correctly.', 'messageid': response_data.get('messageid', '')}, status=HTTP_200_OK)
+                                        else:
+                                            return Response({'details': 'The SMS service provider was unable to process the request.', 'errorcode': response_data.get('status', ''), 'errortext': response_data.get('statustext', ''), 'message': response_data.get('message', '')}, HTTP_502_BAD_GATEWAY)
+                                    elif  _return:
+                                        return Response({'details': 'The SMS service provider was unable to process the request.', 'message': _return.get('message', '')}, status=HTTP_502_BAD_GATEWAY)
+                                except (ValueError, KeyError, IndexError) as e:
+                                    return Response({'details': 'Invalid response structure.', 'error': str(e)}, status=HTTP_502_BAD_GATEWAY)
+
+
                     else:
                         if obj == 409:
                             return Response({'error': f'Try again after {otp_code_expire()} minutes.'}, status=HTTP_409_CONFLICT)
@@ -174,10 +193,26 @@ class MessageSend(APIView):
                                 service = MeliPayamakCom(mobile=mobile_number)
                                 response = service.send_message(message=message_text)
                                 if response in [0, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 35]:
-                                    return Response({'details': 'The SMS service provider was unable to process the request.', 'errorCode': response}, status=HTTP_502_BAD_GATEWAY)
+                                    return Response({'details': 'The SMS service provider was unable to process the request.', 'errorcode': response}, status=HTTP_502_BAD_GATEWAY)
                                 else:
-                                    return Response({'receiver': mobile_number, 'message': message_text, 'smsID': response}, status=HTTP_200_OK)
-
+                                    return Response({'receiver': mobile_number, 'message': message_text, 'messageid': response}, status=HTTP_200_OK)
+                        case 'KAVENEGAR_COM':
+                            service = KavenegarCom(mobile=mobile_number)
+                            response = service.send_message(message=message_text)
+                            try:
+                                response_json = response.json()
+                                entries = response_json.get('entries', [])
+                                _return = response_json.get('return', [])
+                                if entries:
+                                    response_data = entries[0]
+                                    if response.status_code == 200 and response_data.get('status') in [5, 10]:
+                                        return Response({'receiver': response_data.get('receptor', ''), 'message': response_data.get('message', ''), 'messageid': response_data.get('messageid', '')}, status=HTTP_200_OK)
+                                    else:
+                                        return Response({'details': 'The SMS service provider was unable to process the request.', 'errorcode': response_data.get('status', ''), 'errortext': response_data.get('statustext', ''), 'message': response_data.get('message', '')}, HTTP_502_BAD_GATEWAY)
+                                elif  _return:
+                                    return Response({'details': 'The SMS service provider was unable to process the request.', 'message': _return.get('message', '')}, status=HTTP_502_BAD_GATEWAY)
+                            except (ValueError, KeyError, IndexError) as e:
+                                return Response({'details': 'Invalid response structure.', 'error': str(e)}, status=HTTP_502_BAD_GATEWAY)
 
         except AssertionError as e:
             return Response({'error': str(e)}, status=HTTP_204_NO_CONTENT)

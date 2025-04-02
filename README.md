@@ -1,13 +1,12 @@
-
 # Django Iran SMS
 
 ## Overview
 
-A Django-based SMS integration system for simplifying in-country SMS usage in Iran, leveraging the `parsianwebco.ir` , `melipayamak.com` service with JWT authentication. Developed by the Chelseru team, drfiransms is designed to support additional services in future releases.
+A Django-based SMS integration system for simplifying in-country SMS usage in Iran, leveraging the `parsianwebco.ir` , `melipayamak.com` , `kavenegar.com` service with JWT authentication. Developed by the Chelseru team, drfiransms is designed to support additional services in future releases.
 
 ## Features
 
-- Integration with `parsianwebco.ir` , `melipayamak.com`
+- Integration with `parsianwebco.ir` , `melipayamak.com` , `kavenegar.com`
 - JWT-based authentication using `rest_framework_simplejwt`
 - Scalable and extensible for other SMS providers
 - Easy installation and configuration
@@ -43,8 +42,8 @@ DJANGO_IRAN_SMS = {
     'AUTHENTICATION': 'rest_framework_simplejwt',  # Specify the authentication method
     'SMS_BACKEND': 'PARSIAN_WEBCO_IR',  # Set the SMS provider backend
     'OTP_CODE': {
-        'LENGTH': 8,  # Default length of OTP code
-        'EXPIRE_PER_MINUTES': 4,  # Default expiration time in minutes
+        'LENGTH': 6,  # Default length of OTP code
+        'EXPIRE_PER_MINUTES': 2,  # Default expiration time in minutes
     },
     'PARSIAN_WEBCO_IR': {
         'API_KEY': 'API_KEY obtained from sms.parsianwebco.ir',  # API key from the SMS provider
@@ -56,9 +55,36 @@ DJANGO_IRAN_SMS = {
         'USERNAME': 'Username used to log in to the melipayamak.com website.',
         'PASSWORD': 'API_KEY obtained from melipayamak.com',
         'FROM': '50004001001516',  # The sender number that should be received from the web service.
+    },
+    'KAVENEGAR_COM': {
+        'API_KEY': 'API_KEY obtained from kavenegar.com',
+        'FROM': '2000660110'
     }
+
 }
 ```
+
+## Django Iran SMS Configuration
+
+The configuration parameters for `DJANGO_IRAN_SMS` can be set as follows:
+
+### Authentication
+Currently, only `rest_framework_simplejwt` is supported for authentication.
+
+### SMS Backend
+You can choose one of the following SMS providers:
+- `PARSIAN_WEBCO_IR`
+- `MELI_PAYAMAK_COM`
+- `KAVENEGAR_COM`
+
+### OTP Code
+The `OTP_CODE` parameter is a dictionary containing the following keys:
+
+- **`LENGTH`**: Specifies the length of the OTP code. It must be between **3 and 10** digits. If not provided, the default value is **6**.
+- **`EXPIRE_PER_MINUTES`**: Defines the expiration time of the OTP code in minutes. It must be greater than **0**. If not provided, the default value is **2** minutes.
+
+
+
 
 ## Usage
 ### URL Configuration
@@ -131,13 +157,8 @@ Djangoiransms supports JWT authentication using the rest_framework_simplejwt pac
 - Contribution
 
 
-A Django package for seamless integration with Iranian SMS services like ParsianWebCo and Melipayamak.
+A Django package for seamless integration with Iranian SMS services like ParsianWebCo , Kavenegar and Melipayamak.
 Contributions are welcome! Please submit pull requests or report issues on the GitHub repository.
 
 ## License
 MIT License
-
-# Main README
-برای پارسی زبان ها [README_fa.md](README.fa.md).
-
-
