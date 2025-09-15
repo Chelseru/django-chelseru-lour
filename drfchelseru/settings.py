@@ -16,8 +16,8 @@ DJANGO_CHELSERU = {
             'MELI_PAYAMAK_COM_USERNAME' : '',
             'MELI_PAYAMAK_COM_PASSWORD' : '',
             'MELI_PAYAMAK_COM_FROM'     : '',
-            'KAVENEGAR_COM_API_KEY'     : '656F6635756C485658666F6A52307562456C4F5043714769597A58434D2B527974434534672B50445736553D',
-            'KAVENEGAR_COM_FROM'        : '2000660110',
+            'KAVENEGAR_COM_API_KEY'     : '',
+            'KAVENEGAR_COM_FROM'        : '',
         },
         'TEMPLATES': {
             'T1': 1,
